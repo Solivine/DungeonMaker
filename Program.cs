@@ -44,7 +44,7 @@ class Program
         outerSquare.GenerateCorridors();
 
         // Mt. Steel
-        Floor mtSteelVar2 = new AllSquaresFloor(new Size(4, 4), 10, RoomGeneratorType.All, CorridorGeneratorType.Ring);
+        Floor mtSteelVar2 = new AllSquaresFloor(new Size(4, 4), 10, RoomGeneratorType.Edge, CorridorGeneratorType.Ring);
         mtSteelVar2.GenerateRooms();
         mtSteelVar2.GenerateCorridors();
 

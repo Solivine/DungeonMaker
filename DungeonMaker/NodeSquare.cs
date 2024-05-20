@@ -493,7 +493,8 @@ public class NodeSquare
             {
                 for (int col = _room.Position.Col; col < _room.Size.Width + _room.Position.Col; col++)
                 {
-                    GetNode(new Position(row, col)).Content = "R";
+                    Position pos = new Position(row, col);
+                    GetNode(pos).Content = _room.GetNode(pos).Content;
                 }
             }
         }
@@ -532,7 +533,7 @@ public class NodeSquare
                 initPosCols = rnd.Next(2, maxInitPosCols);
 
                 _room = new BasicRoom(initPosRows, initPosCols, roomSize.Height, roomSize.Width);
-                //Console.WriteLine(String.Format("Room assigned with pos {0}, {1} and size {2}, {3}", initPosX, initPosY, roomSize.Col, roomSize.Row));
+                _room.GenerateRoomNodes();
                 DrawRoom();
                 break;
             case RoomType.PointofInterest:
@@ -545,6 +546,21 @@ public class NodeSquare
                 initPosCols = rnd.Next(2, maxInitPosCols);
 
                 _room = new PointofInterest(initPosRows, initPosCols);
+                _room.GenerateRoomNodes();
+                DrawRoom();
+                break;
+            case RoomType.Ring:
+                roomSize = GenerateRoomSize(roomSizeBias, 4, Size.Height - 4);
+                maxInitPosRows = Size.Height - 4 + 2 - roomSize.Height + 1;
+                if (maxInitPosRows < 2) throw new Exception("Not enough space to place the square on the Y axis");
+                initPosRows = rnd.Next(2, maxInitPosRows);
+
+                maxInitPosCols = Size.Width - 4 + 2 - roomSize.Width + 1;
+                if (maxInitPosCols < 2) throw new Exception("Not enough space to place the square on the X axis");
+                initPosCols = rnd.Next(2, maxInitPosCols);
+
+                _room = new RingRoom(initPosRows, initPosCols, roomSize.Height, roomSize.Width);
+                _room.GenerateRoomNodes();
                 DrawRoom();
                 break;
             default:

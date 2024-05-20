@@ -1,3 +1,5 @@
+using System.Data;
+
 namespace DungeonMaker;
 
 public enum RoomType
@@ -50,6 +52,7 @@ public abstract class Room(int initPosRow, int initPosCol, int height, int width
     private readonly int _initPosCol = initPosCol;
     private readonly int _width = width;
     private readonly int _height = height;
+    protected Node[,] _grid = new Node[height, width];
 
     public Position Position
     {
@@ -59,6 +62,26 @@ public abstract class Room(int initPosRow, int initPosCol, int height, int width
     public Size Size
     {
         get => new Size(_height, _width);
+    }
+
+    public Node GetNode(Position pos)
+    {
+        return _grid[pos.Row - _initPosRow, pos.Col - _initPosCol];
+    }
+
+    public virtual void GenerateRoomNodes()
+    {
+        for (int row = 0; row < Size.Height; row++)
+        {
+            for (int col = 0; col < Size.Width; col++)
+            {
+                Node newNode = new Node(new Position(row, col))
+                {
+                    Content = "R"
+                };
+                _grid[row, col] = newNode;
+            }
+        }
     }
 
     /// <summary>
