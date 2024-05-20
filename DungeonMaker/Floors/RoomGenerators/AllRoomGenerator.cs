@@ -1,5 +1,9 @@
 namespace DungeonMaker;
 
+/// <summary>
+/// Generates rooms in every possible square.
+/// </summary>
+/// <param name="floor"></param>
 public class AllRoomGenerator(Floor floor) : RoomGenerator(floor)
 {
     public override void GenerateRooms(RoomSizeBias roomSizeBias)

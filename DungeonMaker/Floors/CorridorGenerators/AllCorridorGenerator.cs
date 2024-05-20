@@ -1,5 +1,10 @@
 namespace DungeonMaker;
 
+/// <summary>
+/// Just connects all possible corridors assuming the sides are open.
+/// This can technically be 'tricked' into other corridor generation types should the room generator method close sides (see sky summit example).
+/// </summary>
+/// <param name="floor"></param>
 public class AllCorridorGenerator(Floor floor) : CorridorGenerator(floor)
 {
     public override void GenerateCorridors()

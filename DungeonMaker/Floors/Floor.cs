@@ -2,17 +2,18 @@ using System.Text;
 
 namespace DungeonMaker;
 
-// Corridor generation should be different
 enum FloorType
 {
     AllSquares,
     ClosedCorners,
+    Hollow,
+    Beetle
     //ClosedSpread  // picks a corner, closes it, and spreads randomly in rows and cols anything from an L to a triangle shape
 }
 
 /// <summary>
 /// A dungeon floor is defined by how many squares tall, and how many squares wide it is, and what the size of the squares is.
-/// A square is full of nodes, and each contains one room or point of interest.
+/// A square is full of nodes, and each contains one room.
 /// Subclasses of dungeon floor defines the content of the squares.
 /// </summary>
 public abstract class Floor
@@ -116,7 +117,7 @@ public abstract class Floor
     {
         StringBuilder sb = new StringBuilder("", Size.Height * Size.Width);
 
-        bool squareDividers = false;
+        bool squareDividers = true;
 
         int maxRows = Size.Height;
         int maxCols = Size.Width;

@@ -1,5 +1,8 @@
 namespace DungeonMaker;
 
+/// <summary>
+/// A floor type where the top and bottom rows do not generate rooms except for the corners. Like a |---| shape.
+/// </summary>
 class BeetleFloor : Floor
 {
     public BeetleFloor(Size size, int nodeSquareSize, RoomGeneratorType roomGeneratorType = RoomGeneratorType.All, CorridorGeneratorType corridorGeneratorType = CorridorGeneratorType.All) : base(size, nodeSquareSize, roomGeneratorType, corridorGeneratorType)

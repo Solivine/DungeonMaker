@@ -1,5 +1,8 @@
 namespace DungeonMaker;
 
+/// <summary>
+/// A pathfinder class for finding the next node for a corridor using the manhattan distance.
+/// </summary>
 public class CorridorPathfinder : Pathfinder
 {
     public override Position NextNode(Node previousNode, Node originNode, Node targetNode)

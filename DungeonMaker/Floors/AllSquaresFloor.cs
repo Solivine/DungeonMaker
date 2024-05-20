@@ -1,5 +1,8 @@
 namespace DungeonMaker;
 
+/// <summary>
+/// Generates usable squares for the whole floor.
+/// </summary>
 class AllSquaresFloor : Floor
 {
     public AllSquaresFloor(Size size, int nodeSquareSize, RoomGeneratorType roomGeneratorType = RoomGeneratorType.All, CorridorGeneratorType corridorGeneratorType = CorridorGeneratorType.All) : base(size, nodeSquareSize, roomGeneratorType, corridorGeneratorType)

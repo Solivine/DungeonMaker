@@ -4,10 +4,14 @@ public enum CorridorGeneratorType
 {
     All,
     //Snake,
-    Ring,  // Ring, RingHorizontal, RingVertical
+    Ring
     //CriticalPath
 }
 
+/// <summary>
+/// The base parent class for corridor generators, it contains the one method all children must inherit of how to connect a corridor between 2 squares.
+/// </summary>
+/// <param name="floor">The floor for corridors to be generated on.</param>
 public abstract class CorridorGenerator(Floor floor)
 {
     protected readonly Floor _floor = floor;
@@ -21,7 +25,6 @@ public abstract class CorridorGenerator(Floor floor)
         // 0. Work out direction of origin -> neighbouring
         NodeSquareSide originJoinSide;
         NodeSquareSide targetJoinSide;
-        //Console.WriteLine("Position of ONSq: {0}, {1}, Position of NNSq: {2}, {3}", originNodeSquare.Position.Col, originNodeSquare.Position.Row, neighbouringNodeSquare.Position.Col, neighbouringNodeSquare.Position.Row);
         if (originNodeSquare.Position.Col == neighbouringNodeSquare.Position.Col)
         {
             // Equal on columns, up or down?
@@ -42,7 +45,6 @@ public abstract class CorridorGenerator(Floor floor)
         }
 
         // 1. Get room in origin node square, choose random node on correct side, mark node
-        //Console.WriteLine(String.Format("Origin Join Side is {0}", originJoinSide));
         Position originRoomNodePosition = originNodeSquare.GetRoom!.GenerateCorridorNodePosition(originJoinSide);
 
         // 2. Draw to edge of origin node square, mark node

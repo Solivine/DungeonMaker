@@ -24,9 +24,9 @@ class Program
         skySummit.GenerateCorridors();
 
         // Mt. Steel
-        Floor mtSteel = new AllSquaresFloor(new Size(2, 4), 12, RoomGeneratorType.Mixed, CorridorGeneratorType.Ring);
-        mtSteel.GenerateRooms();
-        mtSteel.GenerateCorridors();
+        Floor mtSteelVar1 = new AllSquaresFloor(new Size(2, 4), 12, RoomGeneratorType.Mixed, CorridorGeneratorType.Ring);
+        mtSteelVar1.GenerateRooms();
+        mtSteelVar1.GenerateCorridors();
 
         // Hollow Floor
         Floor hollowFloor = new HollowFloor(new Size(3, 4), 12);
@@ -43,7 +43,12 @@ class Program
         outerSquare.GenerateRooms();
         outerSquare.GenerateCorridors();
 
-        Console.WriteLine(outerSquare.ToString());
+        // Mt. Steel
+        Floor mtSteelVar2 = new AllSquaresFloor(new Size(4, 4), 10, RoomGeneratorType.All, CorridorGeneratorType.Ring);
+        mtSteelVar2.GenerateRooms();
+        mtSteelVar2.GenerateCorridors();
+
+        Console.WriteLine(mtSteelVar2.ToString());
     }
 
     private static void PrintNodeSquares(Floor dungeonfloor)

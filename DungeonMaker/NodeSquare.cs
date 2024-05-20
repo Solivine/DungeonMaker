@@ -10,6 +10,10 @@ public enum NodeSquareSide
     Right
 }
 
+/// <summary>
+/// This class is used to define if the sides of a node square are open (are they at the border of the map? are they closed off for some other reason?).
+/// If they are open, then is there a node defined on one of these sides?
+/// </summary>
 public class NodeSquareSides
 {
 
@@ -173,7 +177,8 @@ public class NodeSquareSides
 }
 
 /// <summary>
-/// A square contains a room or a point of interest.
+/// A square contains a large group of nodes, defined by its size.
+/// It will typically contain a room and corridors connecting to that room.
 /// </summary>
 public class NodeSquare
 {
@@ -182,8 +187,15 @@ public class NodeSquare
     private NodeSquareSides _nodeSquareSides = new NodeSquareSides();
     private Position _pos;
 
+    /// <summary>
+    /// The constructor has to generate all the nodes within this square.
+    /// </summary>
+    /// <param name="pos">The position of this square on the dungeon floor.</param>
+    /// <param name="squareSize">How large this square will be.</param>
+    /// <exception cref="ArgumentException">A node square must have at least 5 nodes height and 5 nodes width to be valid. This is because there is a 2x2 border around the square in which rooms cannot generate.</exception>
     public NodeSquare(Position pos, int squareSize)
     {
+        if (squareSize < 5) throw new ArgumentException("The size of a node square must be 5 or larger.");
         _grid = new Node[squareSize, squareSize];
         _pos = pos;
 
@@ -193,7 +205,7 @@ public class NodeSquare
         {
             for (int col = 0; col < maxCols; col++)
             {
-                _grid[row, col] = new Node(row, col);
+                _grid[row, col] = new Node(new Position(row, col));
             }
         }
     }
@@ -233,6 +245,11 @@ public class NodeSquare
         get => Sides.IsUpSideOpen || Sides.IsDownSideOpen || Sides.IsLeftSideOpen || Sides.IsRightSideOpen;
     }
 
+    /// <summary>
+    /// Makes a side of this square unable to generate corridors to.
+    /// </summary>
+    /// <param name="side">The side to close off.</param>
+    /// <exception cref="Exception">Throws an exception on an invalid side argument.</exception>
     public void CloseSide(NodeSquareSide side)
     {
         switch(side)
@@ -250,10 +267,13 @@ public class NodeSquare
                 Sides.SetSideOpen(NodeSquareSide.Right, false);
                 break;
             default:
-                throw new Exception("Invalid side to be closed");
+                throw new ArgumentException("Invalid side to be closed");
         }
     }
 
+    /// <summary>
+    /// Closes all sides of the node square. No corridors can generate from this square, and no room will be generated in it.
+    /// </summary>
     public void CloseAllSides()
     {
         CloseSide(NodeSquareSide.Up);
@@ -262,7 +282,16 @@ public class NodeSquare
         CloseSide(NodeSquareSide.Right);
     }
 
-    private Size GenerateRoomSize(RoomSizeBias roomSizeBias, int minSize = 4, int maxSize = 4)
+    /// <summary>
+    /// Generates the size of a room to be in this node square, with a bias.
+    /// </summary>
+    /// <param name="roomSizeBias">Bias the size of this room to smaller or larger numbers, or have it fixed.</param>
+    /// <param name="minSize">The minimum size of this room.</param>
+    /// <param name="maxSize">The maximum size of this room.</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException">Throws an exception if an invalid room size bias value is provided.</exception>
+    /// <exception cref="Exception">If it's not possible to generate the room within this square is throws an exception.</exception>
+    private static Size GenerateRoomSize(RoomSizeBias roomSizeBias, int minSize = 4, int maxSize = 4)
     {
         if (maxSize >= minSize)
         {
@@ -330,6 +359,14 @@ public class NodeSquare
         throw new Exception(String.Format("Node square too small to fit a room of any size with Min Size {0} when the Max Size is {1}", minSize, maxSize));        
     }
 
+    /// <summary>
+    /// Finds the corridor end node given an origin node position from a room.
+    /// The resulting node will be on the same axis either horizontally or vertically, depending on the side it plans to draw to.
+    /// </summary>
+    /// <param name="nodeSquareSide">The side to find an end node on.</param>
+    /// <param name="originRoomNodePosition">The origin node to compare to.</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException">Throws an exception if an invalid side is provided.</exception>
     private Node FindCorridorEndNode(NodeSquareSide nodeSquareSide, Position originRoomNodePosition)
     {
         Node endNode = nodeSquareSide switch
@@ -345,9 +382,13 @@ public class NodeSquare
         return endNode;
     }
 
+    /// <summary>
+    /// Draws a corridor from the room to the edge of the node square. This should be a straight line.
+    /// </summary>
+    /// <param name="nodeSquareSide">The side of the node square to draw to.</param>
+    /// <param name="startNode">The start node to draw from.</param>
     public void DrawCorridorFromRoom(NodeSquareSide nodeSquareSide, Node startNode)
     {
-        //Console.WriteLine("Draw corridor from room");
         Pathfinder corridorPathfinder = new CorridorPathfinder();
         Node endNode = FindCorridorEndNode(nodeSquareSide, startNode.Position);
 
@@ -360,8 +401,6 @@ public class NodeSquare
             previousNode = activeNode;
             activeNode = GetNode(nextNodePosition);
 
-            //Console.WriteLine(String.Format("Prev {0}, {1} Act {2}, {3} End {4}, {5}", previousNode.Position.Col, previousNode.Position.Row, activeNode.Position.Col, activeNode.Position.Row, endNode.Position.Col, endNode.Position.Row));
-
             if (activeNode.ContentType == "Wall")
             {
                 activeNode.Content = "C";
@@ -369,6 +408,13 @@ public class NodeSquare
         }
     }
 
+    /// <summary>
+    /// Finds the corridor start node in this node square based on the node position in the neighbouring node square it is comparing to.
+    /// This is so the corridor in this square lines up with the corridor in the square it is coming from.
+    /// </summary>
+    /// <param name="neighbouringNodePosition">The position of the neighbouring end node.</param>
+    /// <returns>Returns the start node to be drawn from.</returns>
+    /// <exception cref="Exception">Throws an exception if for some reason the end node is not coming from a matching size node square.</exception>
     public Node FindAndSetCorridorStartNode(Position neighbouringNodePosition)
     {
         //Console.WriteLine(String.Format("Finding corridor start node for {0}, {1}", neighbouringNodePosition.Col, neighbouringNodePosition.Row));
@@ -409,17 +455,19 @@ public class NodeSquare
         }
 
         node.Content = "C";
-        //Console.WriteLine("Setting side {0} with a corridor start node at {1}, {2}", nodeSquareSide, node.Position.Row, node.Position.Col);
         Sides.SetSideToNode(nodeSquareSide, node);
 
         return node;
     }
 
+    /// <summary>
+    /// Draws a corridor to the room within this node square, providing it has a start node found and set, and a room node to pathfind to.
+    /// </summary>
+    /// <param name="startNode">The node that was found and set using a neighbouring node square.</param>
+    /// <param name="endNode">The node within the room within this node square to pathfind to.</param>
     public void DrawCorridorToRoom(Node startNode, Node endNode)
     {
-        //Console.WriteLine("Draw corridor to room");
         Pathfinder corridorPathfinder = new CorridorPathfinder();
-        //Node endNode = FindCorridorEndNode(nodeSquareSide, startNode.Position);
 
         // While active node is not end node
         Node previousNode = GetNode(new Position(0, 0));
@@ -429,8 +477,6 @@ public class NodeSquare
             Position nextNodePosition = corridorPathfinder.NextNode(previousNode, activeNode, endNode);
             previousNode = activeNode;
             activeNode = GetNode(nextNodePosition);
-
-            //Console.WriteLine(String.Format("Prev {0}, {1} Act {2}, {3} End {4}, {5}", previousNode.Position.Row, previousNode.Position.Col, activeNode.Position.Row, activeNode.Position.Col, endNode.Position.Row, endNode.Position.Col));
 
             if (activeNode.ContentType == "Wall")
             {
@@ -457,6 +503,13 @@ public class NodeSquare
         }
     }
 
+    /// <summary>
+    /// Generates a room within this node square.
+    /// </summary>
+    /// <param name="roomType">The type of room to generate.</param>
+    /// <param name="roomSizeBias">The size values the size of this room will bias itself to</param>
+    /// <exception cref="Exception">If it can't place the room within this node square, an exception is thrown.</exception>
+    /// <exception cref="NotImplementedException">If the room type is not found, it assumed it hasn't been implemented yet.</exception>
     public void GenerateRoom(RoomType roomType, RoomSizeBias roomSizeBias = RoomSizeBias.Fixed)
     {
         Random rnd = new Random();
@@ -499,6 +552,11 @@ public class NodeSquare
         }
     }
 
+    /// <summary>
+    /// For printing this node square line by line. This is used when printing the entire dungeon floor.
+    /// </summary>
+    /// <param name="lineNumber">The line number of this node square to print.</param>
+    /// <returns>Returns a string of all the node values of a specific line in this node square.</returns>
     public string LineToString(int lineNumber)
     {
         StringBuilder sb = new StringBuilder("", Size.Width);
@@ -510,6 +568,10 @@ public class NodeSquare
         return sb.ToString();
     }
 
+    /// <summary>
+    /// For printing this node square on its own.
+    /// </summary>
+    /// <returns>Returns a string of the entire node square.</returns>
     public override string ToString()
     {
         StringBuilder sb = new StringBuilder("", Size.Width);

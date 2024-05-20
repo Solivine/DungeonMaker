@@ -37,13 +37,19 @@ public class Size(int height, int width)
     }
 }
 
-public class Room(int initPosRow, int initPosCol, int height, int width)
+/// <summary>
+/// The room base parent class for all children to inherit.
+/// </summary>
+/// <param name="initPosRow">The top left row position in the node square this room will generate from.</param>
+/// <param name="initPosCol">The top left column position in the node square this room will generate from.</param>
+/// <param name="height">How many tiles down to extend this room.</param>
+/// <param name="width">How many tiles right to extend this room.</param>
+public abstract class Room(int initPosRow, int initPosCol, int height, int width)
 {
-    private int _initPosRow = initPosRow;
-    private int _initPosCol = initPosCol;
-    private int _width = width;
-    private int _height = height;
-    private List<Position> _corridorNodePositions = new List<Position>();
+    private readonly int _initPosRow = initPosRow;
+    private readonly int _initPosCol = initPosCol;
+    private readonly int _width = width;
+    private readonly int _height = height;
 
     public Position Position
     {
@@ -55,6 +61,12 @@ public class Room(int initPosRow, int initPosCol, int height, int width)
         get => new Size(_height, _width);
     }
 
+    /// <summary>
+    /// Generates a corridor start node from one of the nodes on the edge of this room based on the node square side it will be connecting to.
+    /// </summary>
+    /// <param name="nodeSquareSide">The side of the room to find a suitable node on.</param>
+    /// <returns></returns>
+    /// <exception cref="Exception">Throws an exception if an invalid side is chosen.</exception>
     public Position GenerateCorridorNodePosition(NodeSquareSide nodeSquareSide)
     {
         Random rnd = new Random();
@@ -66,9 +78,7 @@ public class Room(int initPosRow, int initPosCol, int height, int width)
             NodeSquareSide.Right => new Position(rnd.Next(Position.Row, Position.Row + Size.Height), Position.Col + Size.Width - 1),
             _ => throw new Exception("Invalid room side for corridor node position"),
         };
-        _corridorNodePositions.Add(corridorNodePosition);
 
-        //Console.WriteLine(String.Format("New room corridor node position started at {0}, {1}", corridorNodePosition.Row, corridorNodePosition.Col));
         return corridorNodePosition;
     }
 }

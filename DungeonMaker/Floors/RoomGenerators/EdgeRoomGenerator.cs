@@ -1,5 +1,9 @@
 namespace DungeonMaker;
 
+/// <summary>
+/// Generates rooms only around the edge of the map, and points of interest in the middle.
+/// </summary>
+/// <param name="floor"></param>
 public class EdgeRoomGenerator(Floor floor) : RoomGenerator(floor)
 {
     public override void GenerateRooms(RoomSizeBias roomSizeBias)

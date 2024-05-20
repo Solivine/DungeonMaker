@@ -1,5 +1,8 @@
 namespace DungeonMaker;
 
+/// <summary>
+/// A floor type where the 4 corner rooms of the floor do not generate anything.
+/// </summary>
 class ClosedCornersFloor : Floor
 {
     public ClosedCornersFloor(Size size, int nodeSquareSize, RoomGeneratorType roomGeneratorType = RoomGeneratorType.Edge, CorridorGeneratorType corridorGeneratorType = CorridorGeneratorType.All) : base(size, nodeSquareSize, roomGeneratorType, corridorGeneratorType)

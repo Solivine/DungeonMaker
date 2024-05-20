@@ -1,5 +1,9 @@
 namespace DungeonMaker;
 
+/// <summary>
+/// Generates a mix of rooms and points of interest in all possible squares.
+/// </summary>
+/// <param name="floor"></param>
 public class MixedRoomGenerator(Floor floor) : RoomGenerator(floor)
 {
     public override void GenerateRooms(RoomSizeBias roomSizeBias)
