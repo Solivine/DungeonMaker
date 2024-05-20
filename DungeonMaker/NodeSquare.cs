@@ -564,7 +564,7 @@ public class NodeSquare
                 DrawRoom();
                 break;
             default:
-                throw new NotImplementedException("Room type not implemented");
+                throw new NotSupportedException("Room type not supported");
         }
     }
 
