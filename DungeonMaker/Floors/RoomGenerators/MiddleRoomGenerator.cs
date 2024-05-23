@@ -11,6 +11,8 @@ public class MiddleRoomGenerator(Floor floor) : RoomGenerator(floor)
     {
         if (_floor.Size.Height < 3 || _floor.Size.Width < 3) throw new Exception("Can't generate any middle rooms, this floor would be invalid!");
 
+        RoomFactory roomFactory = new RoomFactory();
+
         foreach (NodeSquare nodeSquare in _floor.Grid)
         {
             // For each node square in the grid, generate a room inside it
@@ -21,11 +23,11 @@ public class MiddleRoomGenerator(Floor floor) : RoomGenerator(floor)
                     nodeSquare.Position.Col == 0 || nodeSquare.Position.Col == _floor.Size.Width - 1
                 )
                 {
-                    nodeSquare.GenerateRoom(RoomType.PointofInterest);
+                    nodeSquare.Room = roomFactory.MakeRoom(RoomType.PointofInterest, nodeSquare.Size);
                 }
                 else
                 {
-                    nodeSquare.GenerateRoom(RoomType.Basic, roomSizeBias);
+                    nodeSquare.Room = roomFactory.MakeRoom(RoomType.Basic, nodeSquare.Size, roomSizeBias);
                 }
             }
         }

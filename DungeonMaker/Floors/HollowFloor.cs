@@ -5,7 +5,7 @@ namespace DungeonMaker;
 /// </summary>
 class HollowFloor : Floor
 {
-    public HollowFloor(Size size, int nodeSquareSize, RoomGeneratorType roomGeneratorType = RoomGeneratorType.All, CorridorGeneratorType corridorGeneratorType = CorridorGeneratorType.All) : base(size, nodeSquareSize, roomGeneratorType, corridorGeneratorType)
+    public HollowFloor(Size size, int nodeSquareSize) : base(size, nodeSquareSize)
     {
         if (size.Height < 3 || size.Width < 3) throw new Exception("Invalid floor size (width too small) for hollow floor");
         

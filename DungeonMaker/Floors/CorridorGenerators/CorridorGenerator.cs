@@ -45,7 +45,7 @@ public abstract class CorridorGenerator(Floor floor)
         }
 
         // 1. Get room in origin node square, choose random node on correct side, mark node
-        Position originRoomNodePosition = originNodeSquare.GetRoom!.GenerateCorridorNodePosition(originJoinSide);
+        Position originRoomNodePosition = originNodeSquare.Room!.GenerateCorridorNodePosition(originJoinSide);
 
         // 2. Draw to edge of origin node square, mark node
         originNodeSquare.DrawCorridorFromRoom(originJoinSide, originNodeSquare.GetNode(originRoomNodePosition));
@@ -54,7 +54,7 @@ public abstract class CorridorGenerator(Floor floor)
         Node neighbouringNodeSquareStartNode = neighbouringNodeSquare.FindAndSetCorridorStartNode(originNodeSquare.Sides.GetNodeFromSide(originJoinSide)!.Position);
 
         // 4. Get room in neighbouring node square, choose random node on correct side, mark node
-        Position targetRoomNodePosition = neighbouringNodeSquare.GetRoom!.GenerateCorridorNodePosition(targetJoinSide);
+        Position targetRoomNodePosition = neighbouringNodeSquare.Room!.GenerateCorridorNodePosition(targetJoinSide);
 
         // 5. Manhattan pathfind to target node
         neighbouringNodeSquare.DrawCorridorToRoom(neighbouringNodeSquareStartNode, neighbouringNodeSquare.GetNode(targetRoomNodePosition));

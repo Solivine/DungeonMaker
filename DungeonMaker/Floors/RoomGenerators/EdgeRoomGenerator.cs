@@ -8,6 +8,8 @@ public class EdgeRoomGenerator(Floor floor) : RoomGenerator(floor)
 {
     public override void GenerateRooms(RoomSizeBias roomSizeBias)
     {
+        RoomFactory roomFactory = new RoomFactory();
+
         foreach (NodeSquare nodeSquare in _floor.Grid)
         {
             // For each node square in the grid, generate a room inside it
@@ -18,11 +20,11 @@ public class EdgeRoomGenerator(Floor floor) : RoomGenerator(floor)
                     nodeSquare.Position.Col == 0 || nodeSquare.Position.Col == _floor.Size.Width - 1
                 )
                 {
-                    nodeSquare.GenerateRoom(RoomType.Basic, roomSizeBias);
+                    nodeSquare.Room = roomFactory.MakeRoom(RoomType.Basic, nodeSquare.Size, roomSizeBias);
                 }
                 else
                 {
-                    nodeSquare.GenerateRoom(RoomType.PointofInterest);
+                    nodeSquare.Room = roomFactory.MakeRoom(RoomType.PointofInterest, nodeSquare.Size);
                 }
             }
         }

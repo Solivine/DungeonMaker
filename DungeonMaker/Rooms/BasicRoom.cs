@@ -5,8 +5,8 @@ namespace DungeonMaker;
 /// </summary>
 class BasicRoom : Room
 {
-    public BasicRoom(int initPosRow, int initPosCol, int height, int width) : base(initPosRow, initPosCol, height, width)
+    public BasicRoom(Position initPosition, Size size) : base(initPosition, size)
     {
-        if (height < 4 || width < 4) throw new Exception("Room size too small for a basic room.");
+        if (size.Height < 4 || size.Width < 4) throw new Exception("Room size too small for a basic room.");
     }
 }

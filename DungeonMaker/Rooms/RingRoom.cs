@@ -5,9 +5,9 @@ namespace DungeonMaker;
 /// </summary>
 class RingRoom : Room
 {
-    public RingRoom(int initPosRow, int initPosCol, int height, int width) : base(initPosRow, initPosCol, height, width)
+    public RingRoom(Position initPosition, Size size) : base(initPosition, size)
     {
-        if (height < 4 || width < 4) throw new Exception("Room size too small for a ring room.");
+        if (size.Height < 4 || size.Width < 4) throw new Exception("Room size too small for a ring room.");
     }
 
     public override void GenerateRoomNodes()

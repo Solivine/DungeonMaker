@@ -2,15 +2,6 @@ using System.Text;
 
 namespace DungeonMaker;
 
-enum FloorType
-{
-    AllSquares,
-    ClosedCorners,
-    Hollow,
-    Beetle
-    //ClosedSpread  // picks a corner, closes it, and spreads randomly in rows and cols anything from an L to a triangle shape
-}
-
 /// <summary>
 /// A dungeon floor is defined by how many squares tall, and how many squares wide it is, and what the size of the squares is.
 /// A square is full of nodes, and each contains one room.
@@ -19,15 +10,9 @@ enum FloorType
 public abstract class Floor
 {
     protected readonly NodeSquare[,] _grid;
-    protected readonly RoomGeneratorType _roomGeneratorType;
-    protected readonly CorridorGeneratorType _corridorGeneratorType;
 
-    public Floor(Size size, int nodeSquareSize, RoomGeneratorType roomGeneratorType, CorridorGeneratorType corridorGeneratorType)
+    public Floor(Size size, int nodeSquareSize)
     {
-        // Assign variables
-        _roomGeneratorType = roomGeneratorType;
-        _corridorGeneratorType = corridorGeneratorType;
-
         // 1. Establish floor
         // 1a. Initialise Empty Grid
         _grid = new NodeSquare[size.Height, size.Width];
@@ -63,50 +48,6 @@ public abstract class Floor
     protected virtual void CloseSides()
     {
         throw new NotImplementedException("Method CloseSides must be implemented by subclasses");
-    }
-
-    public void GenerateRooms(RoomSizeBias roomSizeBias = RoomSizeBias.Any)
-    {
-        switch (_roomGeneratorType)
-        {
-            case RoomGeneratorType.All:
-                AllRoomGenerator allRoomGenerator = new AllRoomGenerator(this);
-                allRoomGenerator.GenerateRooms(roomSizeBias);
-                break;
-            case RoomGeneratorType.Edge:
-                EdgeRoomGenerator edgeRoomGenerator = new EdgeRoomGenerator(this);
-                edgeRoomGenerator.GenerateRooms(roomSizeBias);
-                break;
-            case RoomGeneratorType.Mixed:
-                MixedRoomGenerator mixedRoomGenerator = new MixedRoomGenerator(this);
-                mixedRoomGenerator.GenerateRooms(roomSizeBias);
-                break;
-            case RoomGeneratorType.Middle:
-                MiddleRoomGenerator middleRoomGenerator = new MiddleRoomGenerator(this);
-                middleRoomGenerator.GenerateRooms(roomSizeBias);
-                break;
-            default:
-                throw new ArgumentException("Invalid room generator type");
-        }
-    }
-
-    
-
-    public void GenerateCorridors()
-    {
-        switch (_corridorGeneratorType)
-        {
-            case CorridorGeneratorType.All:
-                AllCorridorGenerator allCorridorGenerator = new AllCorridorGenerator(this);
-                allCorridorGenerator.GenerateCorridors();
-                break;
-            case CorridorGeneratorType.Ring:
-                RingCorridorGenerator ringCorridorGenerator = new RingCorridorGenerator(this);
-                ringCorridorGenerator.GenerateCorridors();
-                break;
-            default:
-                throw new ArgumentException("Invalid corridor generator type");
-        }
     }
 
     /// <summary>

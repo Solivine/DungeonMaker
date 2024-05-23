@@ -4,49 +4,34 @@ class Program
 {
     static void Main(string[] args)
     {
+        FloorFactory floorFactory = new FloorFactory();
+
         // Thunderwave Cave
-        Floor thunderwaveCave = new AllSquaresFloor(new Size(3, 3), 12, RoomGeneratorType.Mixed);
-        thunderwaveCave.GenerateRooms();
-        thunderwaveCave.GenerateCorridors();
+        Floor thunderwaveCave = floorFactory.MakeFloor(FloorType.AllSquares, new Size(3, 3), 12, roomGeneratorType: RoomGeneratorType.Mixed);
 
         // Monster house floor
-        Floor monsterHouseFloor = new AllSquaresFloor(new Size(1, 1), 36);
-        monsterHouseFloor.GenerateRooms(RoomSizeBias.Largest);
+        Floor monsterHouseFloor = floorFactory.MakeFloor(FloorType.AllSquares, new Size(1, 1), 36, roomSizeBias: RoomSizeBias.Largest);
 
         // Beetle shape floor
-        Floor beetleFloor = new BeetleFloor(new Size(3, 3), 12);
-        beetleFloor.GenerateRooms();
-        beetleFloor.GenerateCorridors();
+        Floor beetleFloor = floorFactory.MakeFloor(FloorType.Beetle, new Size(3, 3), 12);
 
         // Sky Summit
-        Floor skySummit = new ClosedCornersFloor(new Size(4, 5), 12);
-        skySummit.GenerateRooms();
-        skySummit.GenerateCorridors();
+        Floor skySummit = floorFactory.MakeFloor(FloorType.ClosedCorners, new Size(4, 5), 12);
 
         // Mt. Steel
-        Floor mtSteelVar1 = new AllSquaresFloor(new Size(2, 4), 12, RoomGeneratorType.Mixed, CorridorGeneratorType.Ring);
-        mtSteelVar1.GenerateRooms();
-        mtSteelVar1.GenerateCorridors();
+        Floor mtSteelVar1 = floorFactory.MakeFloor(FloorType.AllSquares, new Size(2, 4), 12, roomGeneratorType: RoomGeneratorType.Mixed, corridorGeneratorType: CorridorGeneratorType.Ring);
 
         // Hollow Floor
-        Floor hollowFloor = new HollowFloor(new Size(3, 4), 12);
-        hollowFloor.GenerateRooms();
-        hollowFloor.GenerateCorridors();
+        Floor hollowFloor = floorFactory.MakeFloor(FloorType.Hollow, new Size(3, 4), 12);
 
         // Straight Line
-        Floor straightLine = new AllSquaresFloor(new Size(1, 5), 12);
-        straightLine.GenerateRooms();
-        straightLine.GenerateCorridors();
+        Floor straightLine = floorFactory.MakeFloor(FloorType.AllSquares, new Size(1, 5), 12);
 
         // Outer Square
-        Floor outerSquare = new AllSquaresFloor(new Size(4, 6), 12, RoomGeneratorType.Middle);
-        outerSquare.GenerateRooms();
-        outerSquare.GenerateCorridors();
+        Floor outerSquare = floorFactory.MakeFloor(FloorType.AllSquares, new Size(4, 6), 12, roomGeneratorType: RoomGeneratorType.Middle);
 
         // Mt. Steel
-        Floor mtSteelVar2 = new AllSquaresFloor(new Size(4, 4), 10, RoomGeneratorType.Edge, CorridorGeneratorType.Ring);
-        mtSteelVar2.GenerateRooms();
-        mtSteelVar2.GenerateCorridors();
+        Floor mtSteelVar2 = floorFactory.MakeFloor(FloorType.AllSquares, new Size(4, 4), 10, roomGeneratorType: RoomGeneratorType.Edge, corridorGeneratorType: CorridorGeneratorType.Ring);
 
         Console.WriteLine(mtSteelVar2.ToString());
     }

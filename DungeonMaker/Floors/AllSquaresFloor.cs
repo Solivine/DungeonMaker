@@ -5,7 +5,7 @@ namespace DungeonMaker;
 /// </summary>
 class AllSquaresFloor : Floor
 {
-    public AllSquaresFloor(Size size, int nodeSquareSize, RoomGeneratorType roomGeneratorType = RoomGeneratorType.All, CorridorGeneratorType corridorGeneratorType = CorridorGeneratorType.All) : base(size, nodeSquareSize, roomGeneratorType, corridorGeneratorType)
+    public AllSquaresFloor(Size size, int nodeSquareSize) : base(size, nodeSquareSize)
     {
         // 1c. Close Sides
         CloseSides();

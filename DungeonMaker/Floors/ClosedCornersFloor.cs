@@ -5,7 +5,7 @@ namespace DungeonMaker;
 /// </summary>
 class ClosedCornersFloor : Floor
 {
-    public ClosedCornersFloor(Size size, int nodeSquareSize, RoomGeneratorType roomGeneratorType = RoomGeneratorType.Edge, CorridorGeneratorType corridorGeneratorType = CorridorGeneratorType.All) : base(size, nodeSquareSize, roomGeneratorType, corridorGeneratorType)
+    public ClosedCornersFloor(Size size, int nodeSquareSize) : base(size, nodeSquareSize)
     {
         if (size.Height < 3 || size.Width < 3) throw new Exception("Invalid floor size (too small) for closed corners");
 

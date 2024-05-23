@@ -1,3 +1,4 @@
+using System.Data;
 using System.Text;
 
 namespace DungeonMaker;
@@ -225,11 +226,6 @@ public class NodeSquare
         get => _room != null;
     }
 
-    public Room? GetRoom
-    {
-        get => _room;
-    }
-
     public Size Size
     {
         get => new Size(_grid.GetLength(0), _grid.GetLength(1));
@@ -243,6 +239,31 @@ public class NodeSquare
     public bool IsAccessible
     {
         get => Sides.IsUpSideOpen || Sides.IsDownSideOpen || Sides.IsLeftSideOpen || Sides.IsRightSideOpen;
+    }
+
+    public Room? Room
+    {
+        get => _room;
+        set => _room = AssignRoom(value);
+    }
+
+    /// <summary>
+    /// Checks the room value and draws it.
+    /// </summary>
+    /// <param name="room">Room to be assigned to this node square.</param>
+    /// <returns>Returns a room if valid.</returns>
+    /// <exception cref="Exception">Throws an exception if a room exists. In the future, the node square may be wiped instead to allow a new one to be drawn.</exception>
+    /// <exception cref="NoNullAllowedException">Throws no null allowed exception if a null value is provided for the room.</exception>
+    private Room AssignRoom (Room? room)
+    {
+        // If existing room, reset all nodes (or throw exception for now)
+        if (_room != null) throw new Exception("Room already exists for this node square");
+        if (room == null) throw new NoNullAllowedException("Node square room cannot be set to null");
+
+        // Draw room
+        DrawRoom(room);
+
+        return room;
     }
 
     /// <summary>
@@ -280,83 +301,6 @@ public class NodeSquare
         CloseSide(NodeSquareSide.Down);
         CloseSide(NodeSquareSide.Left);
         CloseSide(NodeSquareSide.Right);
-    }
-
-    /// <summary>
-    /// Generates the size of a room to be in this node square, with a bias.
-    /// </summary>
-    /// <param name="roomSizeBias">Bias the size of this room to smaller or larger numbers, or have it fixed.</param>
-    /// <param name="minSize">The minimum size of this room.</param>
-    /// <param name="maxSize">The maximum size of this room.</param>
-    /// <returns></returns>
-    /// <exception cref="ArgumentException">Throws an exception if an invalid room size bias value is provided.</exception>
-    /// <exception cref="Exception">If it's not possible to generate the room within this square is throws an exception.</exception>
-    private static Size GenerateRoomSize(RoomSizeBias roomSizeBias, int minSize = 4, int maxSize = 4)
-    {
-        if (maxSize >= minSize)
-        {
-            Random rnd = new Random();
-
-            // 1. Generate Room Size
-            int width = minSize;
-            int height = minSize;
-
-            int width1 = rnd.Next(minSize, maxSize);
-            int width2 = rnd.Next(minSize, maxSize);
-            int width3 = rnd.Next(minSize, maxSize);
-            int height1 = rnd.Next(minSize, maxSize);
-            int height2 = rnd.Next(minSize, maxSize);
-            int height3 = rnd.Next(minSize, maxSize);
-
-            switch(roomSizeBias)
-            {
-                case RoomSizeBias.Smallest:
-                    width = minSize;
-                    height = minSize;
-                    break;
-                case RoomSizeBias.Small:
-                    width = Math.Min(width1, width2);
-                    height = Math.Min(height1, height2);
-                    break;
-                case RoomSizeBias.ExtraSmall:
-                    width = Math.Min(width3, Math.Min(width1, width2));
-                    height = Math.Min(height3, Math.Min(height1, height2));
-                    break;
-                case RoomSizeBias.Medium:
-                    width = (int) (width1 + width2 / 2);
-                    height = (int) (height1 + height2 / 2);
-                    break;
-                case RoomSizeBias.ExtraMedium:
-                    width = (int) (width1 + width2 + width3 / 3);
-                    height = (int) (height1 + height2 + height3 / 3);
-                    break;
-                case RoomSizeBias.Large:
-                    width = Math.Max(width1, width2);
-                    height = Math.Max(height1, height2);
-                    break;
-                case RoomSizeBias.ExtraLarge:
-                    width = Math.Max(width3, Math.Max(width1, width2));
-                    height = Math.Max(height3, Math.Max(height1, height2));
-                    break;
-                case RoomSizeBias.Largest:
-                    width = maxSize;
-                    height = maxSize;
-                    break;
-                case RoomSizeBias.Any:
-                    width = width1;
-                    height = height1;
-                    break;
-                case RoomSizeBias.Fixed:
-                    // Do nothing.
-                    break;
-                default:
-                    throw new ArgumentException("Room size bias value not implemented");
-            }
-
-            return new Size(height, width);
-        }
-
-        throw new Exception(String.Format("Node square too small to fit a room of any size with Min Size {0} when the Max Size is {1}", minSize, maxSize));        
     }
 
     /// <summary>
@@ -485,86 +429,15 @@ public class NodeSquare
         }
     }
 
-    private void DrawRoom()
+    private void DrawRoom(Room room)
     {
-        if (_room != null)
+        for (int row = room.Position.Row; row < room.Size.Height + room.Position.Row; row++)
         {
-            for (int row = _room.Position.Row; row < _room.Size.Height + _room.Position.Row; row++)
+            for (int col = room.Position.Col; col < room.Size.Width + room.Position.Col; col++)
             {
-                for (int col = _room.Position.Col; col < _room.Size.Width + _room.Position.Col; col++)
-                {
-                    Position pos = new Position(row, col);
-                    GetNode(pos).Content = _room.GetNode(pos).Content;
-                }
+                Position pos = new Position(row, col);
+                GetNode(pos).Content = room.GetNode(pos).Content;
             }
-        }
-        else
-        {
-            throw new Exception("Draw method called before room assigned");
-        }
-    }
-
-    /// <summary>
-    /// Generates a room within this node square.
-    /// </summary>
-    /// <param name="roomType">The type of room to generate.</param>
-    /// <param name="roomSizeBias">The size values the size of this room will bias itself to</param>
-    /// <exception cref="Exception">If it can't place the room within this node square, an exception is thrown.</exception>
-    /// <exception cref="NotImplementedException">If the room type is not found, it assumed it hasn't been implemented yet.</exception>
-    public void GenerateRoom(RoomType roomType, RoomSizeBias roomSizeBias = RoomSizeBias.Fixed)
-    {
-        Random rnd = new Random();
-
-        int maxInitPosRows;
-        int maxInitPosCols;
-        int initPosRows;
-        int initPosCols;
-        Size roomSize;
-        switch(roomType)
-        {
-            case RoomType.Basic:
-                roomSize = GenerateRoomSize(roomSizeBias, 4, Size.Height - 4);
-                maxInitPosRows = Size.Height - 4 + 2 - roomSize.Height + 1;
-                if (maxInitPosRows < 2) throw new Exception("Not enough space to place the square on the Y axis");
-                initPosRows = rnd.Next(2, maxInitPosRows);
-
-                maxInitPosCols = Size.Width - 4 + 2 - roomSize.Width + 1;
-                if (maxInitPosCols < 2) throw new Exception("Not enough space to place the square on the X axis");
-                initPosCols = rnd.Next(2, maxInitPosCols);
-
-                _room = new BasicRoom(initPosRows, initPosCols, roomSize.Height, roomSize.Width);
-                _room.GenerateRoomNodes();
-                DrawRoom();
-                break;
-            case RoomType.PointofInterest:
-                maxInitPosRows = Size.Height - 4 + 2 - 1 + 1;
-                if (maxInitPosRows < 2) throw new Exception("Not enough space to place the square on the Y axis");
-                initPosRows = rnd.Next(2, maxInitPosRows);
-
-                maxInitPosCols = Size.Width - 4 + 2 - 1 + 1;
-                if (maxInitPosCols < 2) throw new Exception("Not enough space to place the square on the X axis");
-                initPosCols = rnd.Next(2, maxInitPosCols);
-
-                _room = new PointofInterest(initPosRows, initPosCols);
-                _room.GenerateRoomNodes();
-                DrawRoom();
-                break;
-            case RoomType.Ring:
-                roomSize = GenerateRoomSize(roomSizeBias, 4, Size.Height - 4);
-                maxInitPosRows = Size.Height - 4 + 2 - roomSize.Height + 1;
-                if (maxInitPosRows < 2) throw new Exception("Not enough space to place the square on the Y axis");
-                initPosRows = rnd.Next(2, maxInitPosRows);
-
-                maxInitPosCols = Size.Width - 4 + 2 - roomSize.Width + 1;
-                if (maxInitPosCols < 2) throw new Exception("Not enough space to place the square on the X axis");
-                initPosCols = rnd.Next(2, maxInitPosCols);
-
-                _room = new RingRoom(initPosRows, initPosCols, roomSize.Height, roomSize.Width);
-                _room.GenerateRoomNodes();
-                DrawRoom();
-                break;
-            default:
-                throw new NotSupportedException("Room type not supported");
         }
     }
 

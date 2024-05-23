@@ -2,27 +2,6 @@ using System.Data;
 
 namespace DungeonMaker;
 
-public enum RoomType
-{
-    Basic,
-    PointofInterest,
-    Ring
-}
-
-public enum RoomSizeBias
-{
-    Smallest,
-    Small,
-    ExtraSmall,
-    Medium,
-    ExtraMedium,
-    Large,
-    ExtraLarge,
-    Largest,
-    Any,
-    Fixed
-}
-
 public class Size(int height, int width)
 {
     private readonly int _height = height;
@@ -46,27 +25,25 @@ public class Size(int height, int width)
 /// <param name="initPosCol">The top left column position in the node square this room will generate from.</param>
 /// <param name="height">How many tiles down to extend this room.</param>
 /// <param name="width">How many tiles right to extend this room.</param>
-public abstract class Room(int initPosRow, int initPosCol, int height, int width)
+public abstract class Room(Position initPosition, Size size)
 {
-    private readonly int _initPosRow = initPosRow;
-    private readonly int _initPosCol = initPosCol;
-    private readonly int _width = width;
-    private readonly int _height = height;
-    protected Node[,] _grid = new Node[height, width];
+    private readonly Position _initPosition = initPosition;
+    private readonly Size _size = size;
+    protected Node[,] _grid = new Node[size.Height, size.Width];
 
     public Position Position
     {
-        get => new Position(_initPosRow, _initPosCol);
+        get => _initPosition;
     }
 
     public Size Size
     {
-        get => new Size(_height, _width);
+        get => new Size(_size.Height, _size.Width);
     }
 
     public Node GetNode(Position pos)
     {
-        return _grid[pos.Row - _initPosRow, pos.Col - _initPosCol];
+        return _grid[pos.Row - Position.Row, pos.Col - Position.Col];
     }
 
     public virtual void GenerateRoomNodes()

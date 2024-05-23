@@ -18,6 +18,9 @@ public class MixedRoomGenerator(Floor floor) : RoomGenerator(floor)
         // 2. Randomly place these throughout the grid
         int currentPointsOfInterest = 0;
         int currentBasicRooms = 0;
+
+        RoomFactory roomFactory = new RoomFactory();
+
         foreach (NodeSquare nodeSquare in _floor.Grid)
         {
             if (nodeSquare.IsAccessible)
@@ -26,12 +29,12 @@ public class MixedRoomGenerator(Floor floor) : RoomGenerator(floor)
                 bool isBasicRoom = rnd.Next(0, 2) == 0;
                 if (isBasicRoom && currentBasicRooms < totalBasicRooms)
                 {
-                    nodeSquare.GenerateRoom(RoomType.Basic, roomSizeBias);
+                    nodeSquare.Room = roomFactory.MakeRoom(RoomType.Basic, nodeSquare.Size, roomSizeBias);
                     currentBasicRooms++;
                 }
                 else
                 {
-                    nodeSquare.GenerateRoom(RoomType.PointofInterest);
+                    nodeSquare.Room = roomFactory.MakeRoom(RoomType.PointofInterest, nodeSquare.Size);
                     currentPointsOfInterest++;
                 }
             }
